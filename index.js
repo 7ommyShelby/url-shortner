@@ -3,19 +3,27 @@
 
 const express = require("express");
 const uniqid = require('generate-unique-id');
-const fs = require("fs")
+const fs = require("fs");
+const { log } = require("console");
 
 const app = express();
 
-app.use(express.json())
+// app.use(express.json())
+app.use(express.urlencoded())
 
 app.get("/", (req, res)=>{
-    res.sendFile(__dirname +'form.html')
+    res.sendFile(__dirname +'/form.html')
 })
 
 app.post('/short-url', (req, res) => {
 
-    console.log(req.body.url);
+    console.log(req.body);
+
+    const shorturl = uniqid({
+        length: 8,
+        useLetters: true,
+        useNumbers: true
+    })
 
     try {
 
@@ -28,12 +36,6 @@ app.post('/short-url', (req, res) => {
         } else {
             urldata = JSON.parse(data);
         }
-
-        const shorturl = uniqid({
-            length: 8,
-            useLetters: true,
-            useNumbers: true
-        })
 
         urldata[shorturl] = req.body.url
 
@@ -57,10 +59,8 @@ app.get("/:shorturl", (req, res) => {
     const filejson = JSON.parse(file);
     const surl = req.params.shorturl;
     const longurl = filejson[surl];
-
+    console.log(longurl);
     res.redirect(longurl);
-
-
 
 })
 
