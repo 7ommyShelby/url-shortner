@@ -4,7 +4,7 @@
 const express = require("express");
 const uniqid = require('generate-unique-id');
 const fs = require("fs");
-const { log } = require("console");
+// const { log } = require("console");
 
 const app = express();
 
