@@ -9,11 +9,39 @@
 
 <body>
     <h1>URL Shortener</h1>
-    <form action="/short-url" method="post">
+    <form>
         <label for="longUrl">Enter a long URL:</label>
         <input type="url" id="longUrl" name="url" required>
         <button type="submit">Shorten URL</button>
     </form>
+    <p> <a class="short" href="" target="_blank"></a></p>
+    <script>
+
+        let lurl = document.querySelector('#longUrl')
+
+        const shorturl = async () => {
+            let data = await fetch('https://url-shortner-cluz.onrender.com/short-url', {
+                method: "POST",
+                headers: {
+                    "Content-Type" : "application/json",
+                },
+                body:JSON.stringify({ "url": lurl.value })
+            });
+                
+            let x = await data.json();
+            console.log(x);
+            document.querySelector(".short").innerText = x.data
+            document.querySelector(".short").setAttribute("href", x.data)
+        }
+
+
+        document.querySelector('button').addEventListener('click', (e) => {
+            e.preventDefault()
+            shorturl();
+        })
+
+    </script>
+
 </body>
 
 </html>

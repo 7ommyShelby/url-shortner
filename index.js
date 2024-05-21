@@ -8,39 +8,42 @@ const fs = require("fs");
 
 const app = express();
 
-// app.use(express.json())
-app.use(express.urlencoded())
+app.use(express.json())
+// app.use(express.urlencoded({extended: true}))
 
-app.get("/", (req, res)=>{
-    res.sendFile(__dirname +'/form.html')
-})
 
 app.post('/short-url', (req, res) => {
-
-    console.log(req.body);
-
+    
+    console.log("post request body =====>>>>>>>>>>>>>>", req.body); 
+    
+    if(Object.keys(req.body).length === 0){
+        return res.json({
+            message: "data nhi hai"
+        })
+    }
+    
     const shorturl = uniqid({
         length: 8,
         useLetters: true,
         useNumbers: true
     })
-
+    
     try {
-
+        
         const data = fs.readFileSync('urlmap.json', { encoding: "utf-8" });
         // console.log("test", data.length);
         let urldata
-
+        
         if (data == '') {
             urldata = {}
         } else {
             urldata = JSON.parse(data);
         }
-
+        
         urldata[shorturl] = req.body.url
-
+        
         fs.writeFileSync("urlmap.json", JSON.stringify(urldata));
-
+        
     } catch (error) {
         console.log(error);
     }
@@ -48,13 +51,13 @@ app.post('/short-url', (req, res) => {
     res.json({
         "status": true,
         "message": "Url Shortner Application",
-        "data": `http://localhost:8000/${shorturl}`,
+        "data": `https://url-shortner-cluz.onrender.com/api/${shorturl}`,
     })
 })
 
 
-app.get("/:shorturl", (req, res) => {
-
+app.get("/api/:shorturl", (req, res) => {
+    
     const file = fs.readFileSync("urlmap.json", { encoding: "utf-8" });
     const filejson = JSON.parse(file);
     const surl = req.params.shorturl;
@@ -62,6 +65,10 @@ app.get("/:shorturl", (req, res) => {
     console.log(longurl);
     res.redirect(longurl);
 
+})
+
+app.get("/", (req, res)=>{
+    res.sendFile(__dirname +'/form.html')
 })
 
 app.listen(8000, () => {
